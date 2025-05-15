@@ -3,6 +3,8 @@ import {
   verifications, type Verification, type InsertVerification,
   detections, type Detection
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -19,69 +21,91 @@ export interface IStorage {
   getRecentVerifications(limit?: number): Promise<Verification[]>;
 }
 
-// In-memory storage implementation
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private detectionMap: Map<string, Detection>;
-  private verificationMap: Map<string, Verification>;
-  
-  currentId: number;
-  
-  constructor() {
-    this.users = new Map();
-    this.detectionMap = new Map();
-    this.verificationMap = new Map();
-    this.currentId = 1;
-  }
+// Database storage implementation
+export class DatabaseStorage implements IStorage {
   
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
   
   // Detection methods
   async saveDetection(detection: Detection): Promise<Detection> {
-    this.detectionMap.set(detection.id, detection);
-    return detection;
+    // Convert the Detection object to the database format
+    const dbDetection = {
+      id: detection.id,
+      medicationName: detection.medicationName,
+      confidence: detection.confidence.toString(), // Convert to string as defined in schema
+      boundingBox: JSON.stringify(detection.boundingBox), // Convert object to JSON string
+      timestamp: new Date(detection.timestamp)
+    };
+    
+    const [insertedDetection] = await db.insert(detections).values(dbDetection).returning();
+    
+    // Convert back to the Detection interface format
+    return {
+      id: insertedDetection.id,
+      medicationName: insertedDetection.medicationName,
+      confidence: parseFloat(insertedDetection.confidence),
+      boundingBox: JSON.parse(insertedDetection.boundingBox),
+      timestamp: insertedDetection.timestamp.toISOString()
+    };
   }
   
   async getDetection(id: string): Promise<Detection | undefined> {
-    return this.detectionMap.get(id);
+    const [dbDetection] = await db.select().from(detections).where(eq(detections.id, id));
+    
+    if (!dbDetection) {
+      return undefined;
+    }
+    
+    // Convert from database format to Detection interface
+    return {
+      id: dbDetection.id,
+      medicationName: dbDetection.medicationName,
+      confidence: parseFloat(dbDetection.confidence),
+      boundingBox: JSON.parse(dbDetection.boundingBox),
+      timestamp: dbDetection.timestamp.toISOString()
+    };
   }
   
   // Verification methods
   async createVerification(verification: InsertVerification): Promise<Verification> {
+    // Generate an ID if not provided
     const id = `ver_${Date.now()}`;
-    const newVerification: Verification = { 
-      ...verification, 
-      id 
+    
+    const dbVerification = {
+      id,
+      medicationName: verification.medicationName as string,
+      isCorrect: verification.isCorrect,
+      verifiedBy: verification.verifiedBy || "Staff Member",
+      timestamp: verification.timestamp ? new Date(verification.timestamp) : new Date(),
+      detectionId: verification.detectionId
     };
     
-    this.verificationMap.set(id, newVerification);
-    return newVerification;
+    const [insertedVerification] = await db.insert(verifications).values(dbVerification).returning();
+    return insertedVerification;
   }
   
   async getRecentVerifications(limit: number = 10): Promise<Verification[]> {
-    // Get all verifications and sort by timestamp (descending)
-    const allVerifications = Array.from(this.verificationMap.values());
-    
-    return allVerifications
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, limit);
+    return await db
+      .select()
+      .from(verifications)
+      .orderBy(desc(verifications.timestamp))
+      .limit(limit);
   }
 }
 
-export const storage = new MemStorage();
+// Export the database storage instance
+export const storage = new DatabaseStorage();
