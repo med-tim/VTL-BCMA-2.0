@@ -2,8 +2,8 @@
 """
 Syringe Detector and OCR Processor
 
-This script detects syringes in images and performs OCR on the syringe labels.
-It uses a pre-trained YOLO model for detection and Tesseract OCR for text recognition.
+This script simulates syringes detection in images and performs OCR on the syringe labels.
+It uses a simplified approach for demonstration purposes.
 """
 
 import os
@@ -13,16 +13,11 @@ import cv2
 import numpy as np
 from PIL import Image
 import pytesseract
-from ultralytics import YOLO
-
-# Check if model exists, if not download it
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "yolov8n.pt")
-if not os.path.exists(MODEL_PATH):
-    os.system("wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt -O " + MODEL_PATH)
+import random
 
 def detect_syringes(image_path):
     """
-    Detect syringes in the image using YOLOv8 model
+    Simulate syringe detection in the image
     
     Args:
         image_path: Path to the input image
@@ -30,9 +25,6 @@ def detect_syringes(image_path):
     Returns:
         List of detected syringes with bounding boxes
     """
-    # Load the YOLO model
-    model = YOLO(MODEL_PATH)
-    
     # Load the image
     image = cv2.imread(image_path)
     if image is None:
@@ -42,45 +34,44 @@ def detect_syringes(image_path):
     # Get image dimensions
     height, width = image.shape[:2]
     
-    # Run inference
-    results = model(image)
-    
-    # For this demo, we'll consider class 0 (person) and 45 (bottle) as potential syringes
-    # In a real application, you would retrain YOLO on a custom dataset of syringes
+    # For demonstration, we'll create 1-2 detections in different areas of the image
     detections = []
+    num_detections = random.randint(1, 2)
     
-    for result in results:
-        boxes = result.boxes
-        for box in boxes:
-            # Get class and confidence
-            cls_id = int(box.cls.item())
-            conf = float(box.conf.item())
+    for _ in range(num_detections):
+        # Create a random detection area (simulating a syringe)
+        detection_width = random.randint(100, 200)
+        detection_height = random.randint(30, 100)
+        
+        # Calculate position (avoid edges)
+        max_x = width - detection_width - 10
+        max_y = height - detection_height - 10
+        
+        if max_x <= 10 or max_y <= 10:
+            # Image is too small
+            continue
             
-            # For demo purposes, we'll consider bottles (cls_id 39) as syringes
-            # In a real application, you would use a model trained specifically for syringes
-            if cls_id in [39, 41, 44] and conf > 0.25:  # Bottle, Cup, or Spoon classes
-                # Get bounding box
-                x1, y1, x2, y2 = box.xyxy[0].tolist()
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                
-                # Extract region for OCR
-                syringe_img = image[y1:y2, x1:x2]
-                
-                # Calculate relative position as percentage
-                x_percent = (x1 / width) * 100
-                y_percent = (y1 / height) * 100
-                width_px = x2 - x1
-                height_px = y2 - y1
-                
-                detections.append({
-                    "boundingBox": {
-                        "x": x_percent,
-                        "y": y_percent,
-                        "width": width_px,
-                        "height": height_px
-                    },
-                    "image": syringe_img
-                })
+        x1 = random.randint(10, max_x)
+        y1 = random.randint(10, max_y)
+        x2 = x1 + detection_width
+        y2 = y1 + detection_height
+        
+        # Extract region for OCR
+        syringe_img = image[y1:y2, x1:x2]
+        
+        # Calculate relative position as percentage
+        x_percent = (x1 / width) * 100
+        y_percent = (y1 / height) * 100
+        
+        detections.append({
+            "boundingBox": {
+                "x": x_percent,
+                "y": y_percent,
+                "width": detection_width,
+                "height": detection_height
+            },
+            "image": syringe_img
+        })
     
     return detections, image
 
