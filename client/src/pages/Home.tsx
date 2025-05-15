@@ -83,29 +83,41 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <div className="h-screen flex flex-col bg-[#F8F9FA] overflow-hidden">
       <Header />
       
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 gap-8">
-          <VideoFeed 
-            onScan={handleManualScan} 
-            isProcessing={isProcessing || verifyMutation.isPending}
-            detections={currentDetection ? [currentDetection] : []}
-          />
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+          {/* Left side: Video feed (takes 2/3 on md screens) */}
+          <div className="md:col-span-2 flex flex-col">
+            <VideoFeed 
+              onScan={handleManualScan} 
+              isProcessing={isProcessing || verifyMutation.isPending}
+              detections={currentDetection ? [currentDetection] : []}
+            />
+          </div>
           
-          <MedicationVerification 
-            detection={currentDetection}
-            isLoading={isProcessing}
-            isPending={verifyMutation.isPending}
-            onVerify={handleVerification}
-          />
-          
-          <VerificationLog verifications={verifications} />
+          {/* Right side: Verification panel and log (takes 1/3 on md screens) */}
+          <div className="flex flex-col space-y-4">
+            {/* Verification panel (takes more space) */}
+            <div className="flex-1">
+              <MedicationVerification 
+                detection={currentDetection}
+                isLoading={isProcessing}
+                isPending={verifyMutation.isPending}
+                onVerify={handleVerification}
+              />
+            </div>
+            
+            {/* Verification log (smaller) */}
+            <div className="h-1/3">
+              <VerificationLog verifications={verifications} />
+            </div>
+          </div>
         </div>
       </main>
       
-      <Footer />
+      <Footer className="py-2" />
     </div>
   );
 };
