@@ -50,11 +50,10 @@ const VerificationLog: React.FC<VerificationLogProps> = ({ verifications }) => {
                 <div>
                   <h4 className="text-xs font-medium text-gray-900 truncate max-w-[120px]">{verification.medicationName}</h4>
                   <p className="text-[10px] text-gray-500">
-                    {verification.isCorrect ? 'Verified' : 'Rejected'} by {verification.verifiedBy}
+                    {verification.isCorrect ? 'Verified' : 'Rejected'} {new Date(verification.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </p>
                 </div>
               </div>
-              <span className="text-[10px] text-gray-500">{formatTime(verification.timestamp)}</span>
             </div>
           ))
         )}

@@ -83,41 +83,39 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#F8F9FA] overflow-hidden">
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
       <Header />
       
-      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
-          {/* Left side: Video feed (takes 2/3 on md screens) */}
-          <div className="md:col-span-2 flex flex-col">
-            <VideoFeed 
-              onScan={handleManualScan} 
-              isProcessing={isProcessing || verifyMutation.isPending}
-              detections={currentDetection ? [currentDetection] : []}
+      <main className="flex-1 w-full mx-auto flex">
+        {/* Video feed takes 2/3 width */}
+        <div className="w-2/3 h-full border-r border-gray-200">
+          <VideoFeed 
+            onScan={handleManualScan} 
+            isProcessing={isProcessing || verifyMutation.isPending}
+            detections={currentDetection ? [currentDetection] : []}
+          />
+        </div>
+        
+        {/* Verification panel takes 1/3 width */}
+        <div className="w-1/3 h-full flex flex-col">
+          {/* Verification panel - 60% height */}
+          <div className="h-3/5 border-b border-gray-200 p-4">
+            <MedicationVerification 
+              detection={currentDetection}
+              isLoading={isProcessing}
+              isPending={verifyMutation.isPending}
+              onVerify={handleVerification}
             />
           </div>
           
-          {/* Right side: Verification panel and log (takes 1/3 on md screens) */}
-          <div className="flex flex-col space-y-4">
-            {/* Verification panel (takes more space) */}
-            <div className="flex-1">
-              <MedicationVerification 
-                detection={currentDetection}
-                isLoading={isProcessing}
-                isPending={verifyMutation.isPending}
-                onVerify={handleVerification}
-              />
-            </div>
-            
-            {/* Verification log (smaller) */}
-            <div className="h-1/3">
-              <VerificationLog verifications={verifications} />
-            </div>
+          {/* Verification log - 40% height */}
+          <div className="h-2/5 overflow-hidden">
+            <VerificationLog verifications={verifications} />
           </div>
         </div>
       </main>
       
-      <Footer className="py-2" />
+      <Footer className="py-1 border-t border-gray-200" />
     </div>
   );
 };
