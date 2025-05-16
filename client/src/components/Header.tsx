@@ -25,7 +25,7 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-50 text-[#0066CC]">
               <span className="w-1 h-1 rounded-full bg-[#0066CC] animate-pulse mr-1"></span>
-              Scanning for Medications
+              Scanning
             </span>
           </div>
         </div>

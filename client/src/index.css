@@ -5,6 +5,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.scanning-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanning-animation::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, rgba(0, 102, 204, 0), rgba(0, 102, 204, 0.5), rgba(0, 102, 204, 0));
+  animation: scanline 3s ease-in-out infinite;
+  z-index: 10;
+}
+
 :root {
   --background: 0 0% 97.3%;
   --foreground: 222 47.4% 11.2%;
