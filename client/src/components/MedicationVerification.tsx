@@ -94,12 +94,16 @@ const MedicationVerification: React.FC<MedicationVerificationProps> = ({
         {/* Empty state with scanning animation */}
         {!isLoading && !detection && (
           <div className="flex flex-col items-center justify-center text-center h-full">
-            <div className="scanning-animation w-44 h-44 flex items-center justify-center rounded-full border border-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+            <div className="scanning-animation w-60 h-60 flex flex-col items-center justify-center rounded-lg border border-gray-100 bg-white shadow-sm">
+              <div className="w-16 h-16 rounded-full border-2 border-[#0066CC] flex items-center justify-center mb-5" 
+                   style={{animation: "scanner-pulse 2s infinite"}}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#0066CC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M14.613,10.007 L18.984,10.007 L18.984,5.635 M18.984,5.635 L14.613,5.635 M14.613,5.635 L18.984,10.007 M9.389,13.993 L5.016,13.993 L5.016,18.365 M5.016,18.365 L9.389,18.365 M9.389,18.365 L5.016,13.993 M5.016,10.007 L5.016,5.635 L9.389,5.635 M18.984,13.993 L18.984,18.365 L14.613,18.365" />
+                </svg>
+              </div>
+              <p className="text-lg font-medium text-[#0066CC]">Scanning</p>
+              <p className="text-sm text-gray-500 mt-2">Looking for medication labels</p>
             </div>
-            <h3 className="text-xl font-medium text-gray-400 mt-6">Waiting for medication</h3>
           </div>
         )}
       </div>

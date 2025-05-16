@@ -7,13 +7,13 @@
 
 @keyframes scanline {
   0% {
-    transform: translateY(-100%);
+    transform: translateY(-10%);
     opacity: 0;
   }
-  10% {
+  20% {
     opacity: 0.8;
   }
-  90% {
+  80% {
     opacity: 0.8;
   }
   100% {
@@ -27,16 +27,28 @@
   overflow: hidden;
 }
 
-.scanning-animation::after {
+.scanning-animation::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(to right, rgba(0, 102, 204, 0), rgba(0, 102, 204, 0.5), rgba(0, 102, 204, 0));
+  background: linear-gradient(to right, rgba(0, 102, 204, 0), rgba(0, 102, 204, 0.7), rgba(0, 102, 204, 0));
   animation: scanline 3s ease-in-out infinite;
   z-index: 10;
+}
+
+@keyframes scanner-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 102, 204, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 102, 204, 0);
+  }
 }
 
 :root {
