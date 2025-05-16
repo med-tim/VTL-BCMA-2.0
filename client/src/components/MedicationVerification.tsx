@@ -39,56 +39,53 @@ const MedicationVerification: React.FC<MedicationVerificationProps> = ({
         
         {/* Detected medication state */}
         {!isLoading && detection && (
-          <div className="flex flex-col h-full">
-            <div className="bg-blue-50 border-l-4 border-[#0066CC] p-4 mb-6">
-              <p className="text-gray-700">Camera active and processing medication labels in background.</p>
-            </div>
-            
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center mb-3">
-                <span className="text-sm text-gray-600 mr-2">Confidence:</span>
-                <div className="w-24 h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-[#0066CC]" 
-                    style={{ width: `${confidencePercent}%` }}
-                  ></div>
-                </div>
-                <span className="text-sm text-gray-600 ml-2">{confidencePercent}%</span>
-              </div>
-              
-              <div className="bg-white rounded-xl border-2 border-[#0066CC] p-6 mb-6 shadow-lg">
-                <h3 className="text-base font-medium text-gray-500 mb-2">DETECTED MEDICATION</h3>
-                <p className="text-3xl font-bold text-[#0066CC]">
+          <div className="flex flex-col h-full items-center justify-center">
+            <div className="text-center max-w-md mb-10">
+              <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-100">
+                <p className="text-4xl font-bold text-[#0066CC] mb-1">
                   {detection.medicationName || "Unknown Medication"}
                 </p>
+                <div className="inline-flex items-center mt-2">
+                  <span className="text-xs text-gray-500 mr-2">Confidence {confidencePercent}%</span>
+                  <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-[#0066CC]" 
+                      style={{ width: `${confidencePercent}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
               
               <p className="text-base text-gray-600 mb-8">Is this medication identification correct?</p>
             </div>
             
-            <div className="flex items-center justify-center space-x-6">
+            <div className="flex items-center justify-center space-x-12">
+              {/* Big X button */}
               <button 
-                className="bg-[#DC3545] hover:bg-red-600 text-white px-6 py-3 rounded-lg text-base font-medium 
-                         flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white hover:bg-red-50 border-2 border-[#DC3545] text-[#DC3545] w-20 h-20 rounded-full 
+                         flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                         shadow-sm hover:shadow-md"
                 onClick={handleDeny}
                 disabled={isPending}
+                aria-label="Incorrect"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
-                <span>Incorrect</span>
               </button>
               
+              {/* Big check mark button */}
               <button 
-                className="bg-[#28A745] hover:bg-green-600 text-white px-6 py-3 rounded-lg text-base font-medium 
-                         flex items-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white hover:bg-green-50 border-2 border-[#28A745] text-[#28A745] w-20 h-20 rounded-full 
+                         flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                         shadow-sm hover:shadow-md"
                 onClick={handleConfirm}
                 disabled={isPending}
+                aria-label="Correct"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>Correct</span>
               </button>
             </div>
           </div>
@@ -96,19 +93,13 @@ const MedicationVerification: React.FC<MedicationVerificationProps> = ({
         
         {/* Empty state */}
         {!isLoading && !detection && (
-          <div className="py-12 flex flex-col items-center justify-center text-center h-full">
-            <div className="bg-gray-100 rounded-full p-6 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-14 w-14 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <div className="flex flex-col items-center justify-center text-center h-full">
+            <div className="animate-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No Medication Detected</h3>
-            <p className="text-base text-gray-600 mb-6 max-w-md">
-              The system is waiting for a medication to scan. Place a medication in the camera's view.
-            </p>
-            <div className="bg-blue-50 border-l-4 border-[#0066CC] p-4 max-w-md text-left">
-              <p className="text-gray-700">Camera is active and processing medication labels in the background.</p>
-            </div>
+            <h3 className="text-xl font-medium text-gray-400 mt-6">Waiting for medication</h3>
           </div>
         )}
       </div>

@@ -97,23 +97,12 @@ const Home: React.FC = () => {
               onVerify={handleVerification}
             />
             
-            {/* Manual scan button at the bottom */}
-            <div className="mt-8 text-center">
-              <button 
-                className="bg-[#0066CC] hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium 
-                           flex items-center space-x-2 mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => processVideoFrame('backend-image-data')}
-                disabled={isProcessing}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 011.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 011.414-1.414L15 13.586V12a1 1 0 011-1z" clipRule="evenodd" />
-                </svg>
-                <span>Process Next Medication</span>
-              </button>
-              
-              <p className="text-xs text-gray-500 mt-2">
-                Camera active and processing images in background
-              </p>
+            {/* Continuous scanning indicator */}
+            <div className="mt-6 text-center">
+              <div className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-50 text-gray-700 border border-blue-100">
+                <span className="w-2 h-2 rounded-full bg-[#0066CC] animate-pulse mr-2"></span>
+                <span>Continuously scanning for medications</span>
+              </div>
             </div>
           </div>
         </div>

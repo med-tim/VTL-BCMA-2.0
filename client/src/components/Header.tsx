@@ -23,9 +23,9 @@ const Header: React.FC = () => {
             <h1 className="text-sm font-medium text-[#212529]">MedVerify</h1>
           </div>
           <div className="flex items-center">
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-800">
-              <span className="w-1 h-1 rounded-full bg-green-500 mr-1"></span>
-              System Ready
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs bg-blue-50 text-[#0066CC]">
+              <span className="w-1 h-1 rounded-full bg-[#0066CC] animate-pulse mr-1"></span>
+              Scanning for Medications
             </span>
           </div>
         </div>
