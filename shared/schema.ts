@@ -1,10 +1,10 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User table
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
 });
@@ -18,12 +18,12 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
 // Detection table for storing medication detections
-export const detections = pgTable("detections", {
+export const detections = sqliteTable("detections", {
   id: text("id").primaryKey(),
   medicationName: text("medication_name").notNull(),
   confidence: text("confidence").notNull(),
   boundingBox: text("bounding_box").notNull(), // Stored as JSON string
-  timestamp: timestamp("timestamp").notNull(),
+  timestamp: text("timestamp").notNull(),
 });
 
 export interface Detection {
@@ -40,12 +40,12 @@ export interface Detection {
 }
 
 // Verification table for storing medication verifications
-export const verifications = pgTable("verifications", {
+export const verifications = sqliteTable("verifications", {
   id: text("id").primaryKey(),
   medicationName: text("medication_name").notNull(),
-  isCorrect: boolean("is_correct").notNull(),
+  isCorrect: integer("is_correct", { mode: "boolean" }).notNull(),
   verifiedBy: text("verified_by").notNull(),
-  timestamp: timestamp("timestamp").notNull(),
+  timestamp: text("timestamp").notNull(), 
   detectionId: text("detection_id").notNull(),
 });
 
