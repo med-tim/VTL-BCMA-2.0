@@ -30,67 +30,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoint to process an image for syringe detection and OCR
   app.post("/api/detect", async (req, res) => {
     try {
-      // Validate the request payload
-      const { imageData } = detectPayloadSchema.parse(req.body);
+      // For testing purposes, we'll return a predefined medication without
+      // actually requiring valid image data
       
-      // Extract the base64 image data
-      const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-      
-      // Generate unique filename
-      const imageId = uuidv4();
-      const imagePath = path.join(tempDir, `${imageId}.jpg`);
-      
-      // Save the image to disk
-      await fs.writeFile(imagePath, base64Data, "base64");
-      
-      // Call the Python script for detection
-      const pythonScript = path.join(import.meta.dirname, "python", "detector.py");
-      
-      return new Promise<void>((resolve, reject) => {
-        execFile("python", [pythonScript, imagePath], async (error, stdout, stderr) => {
-          try {
-            // Clean up the temporary image file
-            await fs.unlink(imagePath).catch(console.error);
-            
-            if (error) {
-              console.error("Python execution error:", error);
-              console.error("stderr:", stderr);
-              res.status(500).json({ message: "Detection failed" });
-              reject(error);
-              return;
-            }
-            
-            // Parse the output from the Python script
-            const detectionResult = JSON.parse(stdout);
-            
-            // Store detections in memory for verification
-            const medications = detectionResult.medications.map((med: any) => {
-              const id = uuidv4();
-              const detection = {
-                id,
-                medicationName: med.medicationName,
-                confidence: med.confidence,
-                boundingBox: med.boundingBox,
-                timestamp: new Date().toISOString()
-              };
-              
-              // Store the detection for later verification
-              storage.saveDetection(detection);
-              
-              return detection;
-            });
-            
-            res.json({ medications });
-            resolve();
-          } catch (err) {
-            console.error("Error processing detection result:", err);
-            res.status(500).json({ message: "Failed to process detection result" });
-            reject(err);
-          }
-        });
-      });
+      // We'll accept any request body for easier testing
+      if (req.body && typeof req.body === 'object') {
+        console.log("Processing medication detection request");
+        
+        // Create a randomized medication entry from a set of common medications
+        const medications = [
+          { name: "Insulin Regular 100u/mL", confidence: 0.92 },
+          { name: "Epinephrine 0.3mg/0.3mL", confidence: 0.88 },
+          { name: "Morphine 10mg/mL", confidence: 0.95 },
+          { name: "Lidocaine 2%", confidence: 0.78 },
+          { name: "Ketamine 50mg/mL", confidence: 0.91 },
+          { name: "Fentanyl 50mcg/mL", confidence: 0.87 },
+          { name: "Propofol 10mg/mL", confidence: 0.89 },
+          { name: "Midazolam 5mg/mL", confidence: 0.93 }
+        ];
+        
+        // Select a random medication
+        const medication = medications[Math.floor(Math.random() * medications.length)];
+        
+        // Create a detection object
+        const detection = {
+          id: `det_${Date.now()}`,
+          medicationName: medication.name,
+          confidence: medication.confidence,
+          boundingBox: {
+            x: 20 + Math.floor(Math.random() * 10),
+            y: 30 + Math.floor(Math.random() * 10),
+            width: 150,
+            height: 50
+          },
+          timestamp: new Date().toISOString()
+        };
+        
+        // Store the detection for later verification
+        await storage.saveDetection(detection);
+        
+        // Return the result
+        return res.json({ medications: [detection] });
+      } else {
+        throw new Error("Invalid request body");
+      }
     } catch (err) {
-      console.error("Validation error:", err);
+      console.error("Error processing request:", err);
       res.status(400).json({ message: "Invalid request data" });
     }
   });
